@@ -69,14 +69,18 @@ if __name__ == "__main__":
     print("Средняя сумма заказа (способ № 3): ", mean_value)
      
     
+    #Среднее, максимальное и медианное значение позиций в заказе
+    count_position = data.groupby(['order_id']).agg({ 'item_name': ['count']})
+    list_count_position = count_position['item_name']['count']
+  
+    mean_value = round(mean(list(list_count_position)), 4)
+    print('Среднее значение позиций в заказе: ', mean_value)
+ 
+    max_value = list_count_position.max()
+    print('Максимальное значение позиций в заказе: ', max_value)
     
-    
-    
-    
-    
-    
-    
-    
+    median_value = list_count_position.median()
+    print('Медианное значение позиций в заказе: ', median_value)
     
     
     
