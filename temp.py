@@ -5,6 +5,7 @@ Spyder Editor
 This is a temporary script file.
 """
 import pandas as pd
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     data = pd.read_csv('https://raw.githubusercontent.com/justmarkham/DAT8/master/data/chipotle.tsv', sep='\t')
@@ -29,4 +30,21 @@ if __name__ == "__main__":
     data[col] = data[col].apply(lambda x: float(x.replace('$', '').replace(' ', '')))
     new_type_column = data[col].dtypes
     print("Change type of column 'item_price' from ", old_type_column, " to ", new_type_column)
+    
+    agg_func_math = {
+        'item_price': ['sum']
+    }
+   
+    #5
+    series_group_by_price = data.groupby(['item_name']).agg(agg_func_math)
+    enam_index = list(range(1, len(series_group_by_price) + 1))
+    series_group_by_price['index'] = enam_index
+
+    x = series_group_by_price['index'].values
+    y = list(series_group_by_price['item_price']['sum'].round(2))
+
+    plt.bar(x, y)
+    
+    
+  
     
