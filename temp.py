@@ -6,6 +6,8 @@ This is a temporary script file.
 """
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+from statistics import mean
 
 if __name__ == "__main__":
     data = pd.read_csv('https://raw.githubusercontent.com/justmarkham/DAT8/master/data/chipotle.tsv', sep='\t')
@@ -46,5 +48,35 @@ if __name__ == "__main__":
     plt.bar(x, y)
     
     
-  
+    #Средняя сумма заказа( 3 способа )
+   
+    #Способ 1
+    agg_func_math = {
+        'item_price': ['sum']
+    }
+    orders = data.groupby(['order_id']).agg(agg_func_math)
+    mean_value = orders.mean(0)
+    
+    print("Средняя сумма заказа (способ № 1): ", mean_value)
+    
+    #Способ 2
+    list_orders = list(orders['item_price']['sum'])
+    mean_value = sum(list_orders) / len(list_orders)
+    print("Средняя сумма заказа (способ № 2): ", mean_value)
+    
+     #Способ 3
+    mean_list = mean(list_orders)
+    print("Средняя сумма заказа (способ № 3): ", mean_value)
+     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
