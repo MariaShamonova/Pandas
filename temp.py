@@ -93,4 +93,19 @@ if __name__ == "__main__":
     print('Введите текущий курс доллара: ')
     dollar = float(input().replace(',', '.'))
     data['item_price_rub'] = data['item_price'].map(lambda x: x * dollar)
+    
+    #11. Сгруппировать заказы по входящим позициям в него. 
+        #Отдельно сгруппировать по стейкам во всех видах прожарках.
    
+    
+    data_temp = data[['order_id','item_name', 'quantity']]
+    position_in_order = data_temp.groupby(list(data_temp)).size().reset_index(name="count")
+    position_in_order['count'] = position_in_order['quantity'].mul(position_in_order['count'])
+    position_in_order = position_in_order.drop('quantity', 1)
+    
+    new_data = data[data['item_name'].str.contains("Steak")]
+    new_data = new_data[['order_id','item_name', 'quantity']]
+    position_in_order = new_data.groupby(list(new_data)).size().reset_index(name="count")
+    position_in_order['count'] = position_in_order['quantity'].mul(position_in_order['count'])
+    position_in_order = position_in_order.drop('quantity', 1)
+    print(position_in_order.head(40))
