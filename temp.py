@@ -6,7 +6,6 @@ This is a temporary script file.
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 from statistics import mean
 
 if __name__ == "__main__":
@@ -83,4 +82,15 @@ if __name__ == "__main__":
     print('Медианное значение позиций в заказе: ', median_value)
     
     
+    #9.  Определить статистику заказов стейков, а также статистику заказов прожарки.
     
+    
+    #new_data = data[data['A'].str.contains("hello")]
+    
+    
+    #10. Добавить новый столбец цен на каждую позицию в заказе в рублях.
+    #print(data)
+    print('Введите текущий курс доллара: ')
+    dollar = float(input().replace(',', '.'))
+    data['item_price_rub'] = data['item_price'].map(lambda x: x * dollar)
+   
