@@ -5,6 +5,7 @@ Spyder Editor
 This is a temporary script file.
 """
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from statistics import mean
 
@@ -95,7 +96,7 @@ if __name__ == "__main__":
 
     # 9.  Определить статистику заказов стейков, а также статистику заказов прожарки.
 
-    #new_data = data[data['A'].str.contains("hello")]
+    
 
     # 10. Добавить новый столбец цен на каждую позицию в заказе в рублях.
     # print(data)
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     data_temp = data[['order_id', 'item_name', 'quantity']]
     columns = ['order_id', 'item_name', 'quantity']
     position_in_order = getPositionInOrder(data_temp, columns)
-        
+
     print("Заказы по входящим позициям в него: ")
     print(position_in_order)
 
@@ -117,18 +118,19 @@ if __name__ == "__main__":
     new_data = new_data[['order_id', 'item_name',
                          'quantity', 'choice_description']]
 
-    new_data['sauce'] = new_data['choice_description'].map(
-        lambda x: (('Hot: ' + str(x.count("Hot")) + ' ') if '(Hot)' in x else '') +
-        (('Medium: ' + str(x.count("Medium")) + ' ') if 'Medium' in x else '') +
-        (('Melt: ' + str(x.count("Melt"))) if '(Melt)' in x else '')
-    )
+    hot_sauce = new_data[new_data.choice_description.str.contains('Hot')]
+    mild_sauce = new_data[new_data.choice_description.str.contains('Mild')]
+    medium_sauce = new_data[new_data.choice_description.str.contains('Medium')]
 
-    def getUniqueValue(arr):
-        return 'Hot' in arr or 'Melt' in arr or 'Medium' in arr
+    # 12. Определить цену по каждой позиции в отдельности.
 
-    new_data['choice_description'] = new_data['choice_description'].map(
-        lambda x: list(filter(getUniqueValue, x.replace('[', '').replace(']', '').split(','))))
-    new_data.drop(new_data[new_data['choice_description'].str.len() == 0 ].index, inplace = True)
-  
-    print(new_data.head(20))
+    data['price/quantity'] = round(data['item_price']/data['quantity'], 2)
+    data['price/quantity'] = data['price/quantity'].map(lambda x: [x])
+    prices = data.groupby('item_name').agg(
+        {'price/quantity': 'sum'})
+    prices = prices['price/quantity'].map(lambda x: np.unique(x)).reset_index()
 
+    mix_positions = prices[prices['item_name'].str.contains('and')]
+
+    chips_prices = prices[prices['item_name'] == 'Chips']
+    mix_positions['item_name'].map(lambda x: x.replace('Chips and ', ''))
