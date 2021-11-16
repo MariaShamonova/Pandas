@@ -96,7 +96,18 @@ if __name__ == "__main__":
     print('Медианное значение позиций в заказе: ', median_value)
 
     # 9.  Определить статистику заказов стейков, а также статистику заказов прожарки.
-
+    steak_items = data[data['item_name'].str.contains("Steak")]
+    print(steak_items)
+    count_steak_items = steak_items.groupby('item_name').agg({'quantity': 'sum'}).quantity.sum()
+    steak_group_by_order_id = steak_items.groupby('order_id').agg({'quantity': 'sum'})
+    
+    print('Всего было заказано стейков:' + str(count_steak_items) )
+    print('Среднее количество стейков в заказе: ' + str(round(steak_group_by_order_id['quantity'].mean(), 2)))
+    print('Медиана стейков в заказе: ' + str(steak_group_by_order_id['quantity'].median()))
+    print('Минимальное количество стейков в заказе: ' + str(steak_group_by_order_id['quantity'].min()))
+    print('Максимальное количество стейков в заказе: ' + str(steak_group_by_order_id['quantity'].max()))
+    print('Стандартное отклонение количества стейков в заказе: ' + str(round(steak_group_by_order_id['quantity'].std(), 2)))
+   
     # 10. Добавить новый столбец цен на каждую позицию в заказе в рублях.
     # print(data)
     print('Введите текущий курс доллара: ')
@@ -111,9 +122,9 @@ if __name__ == "__main__":
     position_in_order = getPositionInOrder(data_temp, columns)
 
     print("Заказы по входящим позициям в него: ")
-    print(position_in_order)
+    # print(position_in_order)
 
-    new_data = data[data['item_name'].str.contains("Steak")]
+    new_data = steak_items
     new_data = new_data[['order_id', 'item_name',
                          'quantity', 'choice_description']]
 
@@ -138,10 +149,9 @@ if __name__ == "__main__":
 
     mix_positions[['main', 'dependence']] = mix_positions['item_name'].str.split(
         ' and ', 1, expand=True)
-    my_word = ["Chips"]
 
     mix_positions['main'], mix_positions['dependence'] = np.where(
-        prices.item_name.isin(my_word).any(), (mix_positions['main'], mix_positions['dependence']), (mix_positions['dependence'], mix_positions['main']))
+        prices.item_name.isin( ["Chips"]).any(), (mix_positions['main'], mix_positions['dependence']), (mix_positions['dependence'], mix_positions['main']))
 
     mix_positions['price_main'] = mix_positions.main.apply(
         lambda x: prices.loc[prices.item_name == x, 'price/quantity'].values[0])
@@ -156,7 +166,7 @@ if __name__ == "__main__":
     multi = mix_positions[['main', 'price_main','dependence', 'price_dependence']].set_index(['main', 'price_main', 'dependence'])
     
     print('Цены по каждой позиции: ')
-    print(prices)
-    print(multi)
+    # print(prices)
+    # print(multi)
     
     
