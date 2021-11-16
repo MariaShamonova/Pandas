@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from statistics import mean
+import numpy as geek
 
 
 def getPositionInOrder(data, columns):
@@ -96,8 +97,6 @@ if __name__ == "__main__":
 
     # 9.  Определить статистику заказов стейков, а также статистику заказов прожарки.
 
-    
-
     # 10. Добавить новый столбец цен на каждую позицию в заказе в рублях.
     # print(data)
     print('Введите текущий курс доллара: ')
@@ -128,9 +127,36 @@ if __name__ == "__main__":
     data['price/quantity'] = data['price/quantity'].map(lambda x: [x])
     prices = data.groupby('item_name').agg(
         {'price/quantity': 'sum'})
+
     prices = prices['price/quantity'].map(lambda x: np.unique(x)).reset_index()
 
-    mix_positions = prices[prices['item_name'].str.contains('and')]
+    mix_positions = prices[prices['item_name'].str.contains(
+        'and')].copy(deep=True)
 
     chips_prices = prices[prices['item_name'] == 'Chips']
-    mix_positions['item_name'].map(lambda x: x.replace('Chips and ', ''))
+    prices = prices[~prices.item_name.str.contains("Chips and")]
+
+    mix_positions[['main', 'dependence']] = mix_positions['item_name'].str.split(
+        ' and ', 1, expand=True)
+    my_word = ["Chips"]
+
+    mix_positions['main'], mix_positions['dependence'] = np.where(
+        prices.item_name.isin(my_word).any(), (mix_positions['main'], mix_positions['dependence']), (mix_positions['dependence'], mix_positions['main']))
+
+    mix_positions['price_main'] = mix_positions.main.apply(
+        lambda x: prices.loc[prices.item_name == x, 'price/quantity'].values[0])
+    mix_positions = mix_positions.explode('price_main')
+    mix_positions.sort_values(['main', 'price_main'], ascending=[
+                              False, True], inplace=True)
+ 
+    def substructValues(arr, value):
+        return [round(x - value, 2) for x in arr]
+
+    mix_positions['price_dependence']  = mix_positions.apply(lambda f: substructValues(f['price/quantity'],f['price_main']), axis=1)
+    multi = mix_positions[['main', 'price_main','dependence', 'price_dependence']].set_index(['main', 'price_main', 'dependence'])
+    
+    print('Цены по каждой позиции: ')
+    print(prices)
+    print(multi)
+    
+    
