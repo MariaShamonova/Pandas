@@ -122,7 +122,7 @@ if __name__ == "__main__":
     position_in_order = getPositionInOrder(data_temp, columns)
 
     print("Заказы по входящим позициям в него: ")
-    # print(position_in_order)
+    print(position_in_order)
 
     new_data = steak_items
     new_data = new_data[['order_id', 'item_name',
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     multi = mix_positions[['main', 'price_main','dependence', 'price_dependence']].set_index(['main', 'price_main', 'dependence'])
     
     print('Цены по каждой позиции: ')
-    # print(prices)
-    # print(multi)
+    print(prices)
+    print(multi)
     
     
